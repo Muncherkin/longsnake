@@ -1,1 +1,3 @@
-target/
+ormen/target/
+ormen/src/main.exe
+ormen/src/main.pdb
