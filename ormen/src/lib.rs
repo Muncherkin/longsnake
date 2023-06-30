@@ -35,7 +35,7 @@ impl fmt::Display for Card {
 }
 
 fn get_deck() -> Vec<Card> {
-    let mut deck: Vec<Card> = Vec::new();
+    let mut deck: Vec<Card> = Vec::with_capacity(52);
     for suit_id in 0..4 {
         let suit: Suit = match suit_id {
             0 => Suit::Hearts,
@@ -82,8 +82,8 @@ impl Game {
     pub fn new() -> Game {
         Game {
             deck: get_shuffled_deck(),
-            snake: vec![],
-            played: vec![],
+            snake: Vec::with_capacity(52),
+            played: Vec::with_capacity(52),
         }
     }
 
@@ -91,48 +91,85 @@ impl Game {
         while self.deck.len() != 0 {
             // TODO: Implement turn
             self.snake.push(self.deck.pop().unwrap());
-            // player.take_turn(vec![self.snake.clone()], self.played.clone());
             let mut guess = String::new();
             let _ = io::stdin().read_line(&mut guess);
             Self::print_board(&self);
           
-            self.play_round(
-                self.snake.clone(), 
+            
+            let moves = Self::play_round(
+                &mut self.snake.clone(), 
                 self.snake.len() - 1, 
                 self.snake.len() - 1
             );
-            //player.take_turn(vec![self.snake.clone()], self.played.clone());
+
+            if moves.is_some() {
+                let moves = moves.unwrap();
+                
+                if moves.len() == 1 {
+                    // TODO: Set self.snake to new snake
+                    let ref m: Vec<Card> = moves[0];
+                    self.snake = m.clone();
+                } else if moves.len() > 1 {
+                    let index = player.take_turn(&moves, self.played.clone()); // self.played is not updated
+                    let ref m: Vec<Card> = moves[index];
+                    self.snake = m.clone();
+                } 
+            } 
         }
     }
 
-    fn play_round(&mut self, snake: Vec<Card>, index: usize, last_index: usize) -> Option<Vec<Vec<Card>>> {
+    fn play_round(snake: &mut Vec<Card>, index: usize, last_index: usize) -> Option<Vec<Vec<Card>>> {
         // look all 3 cards behind last pos, look 1 card behind current pos, look at current pos
-        let len = snake.len();
+        let mut new_snakes: Vec<Vec<Card>> = vec![];
         
-        for i in 1..4 {
-            if (last_index + i > len - 1) {
-                self.check_merge(snake.clone(), last_index + i);
+        if last_index != index + 1 {
+            Self::merge(snake, last_index + 0, &mut new_snakes);
+        }
+        Self::merge(snake, last_index + 1, &mut new_snakes);
+        Self::merge(snake, last_index + 2, &mut new_snakes);
+        Self::merge(snake, index + 1, &mut new_snakes);
+        Self::merge(snake, index, &mut new_snakes);
+
+        if new_snakes.len() == 0 {
+            return Some(vec![snake.clone()]);
+        }
+
+        Some(new_snakes)
+    }
+
+    fn merge(snake: &mut Vec<Card>, index: usize, new_snakes: &mut Vec<Vec<Card>>) {
+        if index < snake.len() {
+            let result = Self::solve_merge(snake, index);
+            if result.is_some() {
+                new_snakes.append(&mut result.unwrap());
             }
         }
+    }
 
-        if (index + 1 > len-1) {
-            self.check_merge(snake.clone(), index + 1);
+    fn solve_merge(snake: &mut Vec<Card>, index: usize) -> Option<Vec<Vec<Card>>> {
+        let snake1 = Self::solve_at(&mut snake.clone(), index, 1);
+        let snake3 = Self::solve_at(&mut snake.clone(), index, 3);
+
+        if snake1.is_some() && snake3.is_some() {
+            let mut temp_snake = snake1.unwrap();
+            temp_snake.append(&mut snake3.unwrap());
+            return Some(temp_snake);
+        } else if snake1.is_some() {
+            return Some(snake1.unwrap());
+        } else if snake3.is_some() {
+            return Some(snake3.unwrap());
         }
-
-        self.check_merge(snake.clone(), index);
 
         None
     }
 
-    fn check_merge(&mut self, snake: Vec<Card>, index: usize) -> Option<Vec<Vec<Card>>> {
-        if (index > 0) {
-            if (snake[index].suit == snake[index - 1].suit || snake[index].value == snake[index-1].value) {
-                self.play_round(snake.clone(), index - 1, index);
-            }
-        }
-        if (index > 2) {
-            if (snake[index].suit == snake[index - 3].suit || snake[index].value == snake[index-3].value) {
-                self.play_round(snake.clone(), index - 3, index);
+    fn solve_at(snake: &mut Vec<Card>, index: usize, offset: usize) -> Option<Vec<Vec<Card>>> {
+        if (index > offset - 1) {
+            if snake[index].suit == snake[index - offset].suit || snake[index].value == snake[index - offset].value {
+                snake[index - offset] = snake[index];
+                snake.remove(index);
+
+                return Self::play_round(snake, index - offset, index);
             }
         }
 
@@ -198,7 +235,7 @@ pub struct Player {
     pub losses: usize,
 }
 impl Player {
-    pub fn take_turn(&self, snakes: Vec<Vec<Card>>, played: Vec<Card>) -> usize {
+    pub fn take_turn(&self, snakes: &Vec<Vec<Card>>, played: Vec<Card>) -> usize {
         0
     }
 }
