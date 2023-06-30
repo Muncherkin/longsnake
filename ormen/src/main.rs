@@ -1,5 +1,4 @@
 use ormen::*;
-
 pub mod lib;
 
 fn main() {

@@ -1,8 +1,7 @@
-use binary_tree::{self, BinaryTree};
 use rand::seq::SliceRandom;
 use rand::thread_rng;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Suit {
     Hearts,
     Diamonds,
@@ -10,7 +9,7 @@ pub enum Suit {
     Spades,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Card {
     pub suit: Suit,
     pub value: usize,
@@ -67,32 +66,24 @@ impl Game {
         self.played = vec![];
     }
 
-    pub fn play(&mut self) {
+    pub fn play(&mut self, player: &impl Behaviour) {
         while self.deck.len() != 0 {
             // TODO: Implement turn
             self.snake.push(self.deck.pop().unwrap());
-            self.play_logic();
+            player.take_turn(vec![self.snake.clone()], self.played.clone());
         }
-    }
-
-    fn play_logic(&mut self) {
-        let len = self.snake.len();
-
-        // look all 3 cards behind last pos, look 1 card behind current pos, look at current pos
     }
 }
 
+pub trait Behaviour {
+    fn take_turn(&self, snakes: Vec<Vec<Card>>, played: Vec<Card>) -> usize;
+}
 pub struct Player {
     pub wins: usize,
     pub losses: usize,
 }
-
-impl Player {
-    fn play_turn(
-        move_tree: &dyn BinaryTree<Node = Card>,
-        snake: Vec<Card>,
-        played: Vec<Card>,
-    ) -> usize {
-        return 0;
+impl Behaviour for Player {
+    fn take_turn(&self, snakes: Vec<Vec<Card>>, played: Vec<Card>) -> usize {
+        0
     }
 }
