@@ -71,11 +71,15 @@ impl Game {
         while self.deck.len() != 0 {
             // TODO: Implement turn
             self.snake.push(self.deck.pop().unwrap());
-            self.take_turn();
+            self.play_logic();
         }
     }
 
-    fn take_turn(&mut self) {}
+    fn play_logic(&mut self) {
+        let len = self.snake.len();
+
+        // look all 3 cards behind last pos, look 1 card behind current pos, look at current pos
+    }
 }
 
 pub struct Player {
