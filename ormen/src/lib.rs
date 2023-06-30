@@ -1,3 +1,4 @@
+use binary_tree::{self, BinaryTree};
 use rand::seq::SliceRandom;
 use rand::thread_rng;
 
@@ -78,7 +79,16 @@ impl Game {
 }
 
 pub struct Player {
-    wins: usize,
-    losses: usize,
-    behaviour: usize,
+    pub wins: usize,
+    pub losses: usize,
+}
+
+impl Player {
+    fn play_turn(
+        move_tree: &dyn BinaryTree<Node = Card>,
+        snake: Vec<Card>,
+        played: Vec<Card>,
+    ) -> usize {
+        return 0;
+    }
 }

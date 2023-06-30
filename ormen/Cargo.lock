@@ -3,6 +3,12 @@
 version = 3
 
 [[package]]
+name = "binary-tree"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "195cfe2d570126f76b787500267993411a6b5fbf880bef38369682530ed909b4"
+
+[[package]]
 name = "cfg-if"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -29,6 +35,7 @@ checksum = "b4668fb0ea861c1df094127ac5f1da3409a82116a4ba74fca2e58ef927159bb3"
 name = "ormen"
 version = "0.1.0"
 dependencies = [
+ "binary-tree",
  "rand",
 ]
 
