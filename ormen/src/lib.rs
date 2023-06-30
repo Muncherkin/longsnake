@@ -60,10 +60,10 @@ pub struct Game {
 }
 
 impl Game {
-    pub fn new() {
-        let deck: Vec<Card> = get_shuffled_deck();
-        let snake: Vec<Card> = vec![];
-        let played: Vec<Card> = vec![];
+    pub fn new(&mut self) {
+        self.deck = get_shuffled_deck();
+        self.snake = vec![];
+        self.played = vec![];
     }
 
     pub fn play(&mut self) {
