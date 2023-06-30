@@ -67,15 +67,22 @@ impl Game {
         self.played = vec![];
     }
 
-    pub fn play(&mut self) {
+    pub fn play(&mut self, player: &impl Behaviour) {
         while self.deck.len() != 0 {
             // TODO: Implement turn
             self.snake.push(self.deck.pop().unwrap());
-            self.take_turn();
+            player.take_turn(/*binary tree hjälp*/, self.snake, self.played);
         }
     }
+}
 
-    fn take_turn(&mut self) {}
+pub trait Behaviour {
+    fn take_turn(
+        &self,
+        move_tree: &dyn BinaryTree<Node = Card>,
+        snake: Vec<Card>,
+        played: Vec<Card>,
+    ) -> usize;
 }
 
 pub struct Player {
@@ -83,8 +90,9 @@ pub struct Player {
     pub losses: usize,
 }
 
-impl Player {
-    fn play_turn(
+impl Behaviour for Player {
+    fn take_turn(
+        &self,
         move_tree: &dyn BinaryTree<Node = Card>,
         snake: Vec<Card>,
         played: Vec<Card>,
