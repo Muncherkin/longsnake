@@ -76,3 +76,9 @@ impl Game {
 
     fn take_turn(&mut self) {}
 }
+
+pub struct Player {
+    wins: usize,
+    losses: usize,
+    behaviour: usize,
+}
